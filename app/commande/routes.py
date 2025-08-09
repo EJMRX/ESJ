@@ -6,15 +6,15 @@ bp = Blueprint('commande', __name__, url_prefix='/commande', template_folder='te
 def index():
     # بيانات وهمية (Dummy Data) لبطاقات الإحصاء (KPIs)
     kpi_stats = {
-        'total': 49492, 
-        'abandoned': 2, 
-        'pending': 31, 
-        'confirmed': 3, 
-        'ready': 783,
-        'return_not_received': 974, 
-        'shipped': 4702, 
-        'delivered': 5943, 
-        'cancelled': 4186
+        'total': , 
+        'abandoned': , 
+        'pending': , 
+        'confirmed': , 
+        'ready': ,
+        'return_not_received': , 
+        'shipped': , 
+        'delivered': , 
+        'cancelled': 
     }
     
     # بيانات وهمية لجدول الطلبات
