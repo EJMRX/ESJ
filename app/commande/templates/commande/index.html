@@ -1,0 +1,310 @@
+{% extends 'layout.html' %}
+{% block title %}Gestion de Commandes{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="bi bi-pc-display-horizontal me-2"></i><strong>Gestion de Commandes</strong></h4>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOrderModal">
+        <i class="bi bi-plus-lg"></i> Ajouter une commande
+    </button>
+</div>
+
+<!-- KPI Stats Cards -->
+<div class="kpi-card-wrapper mb-3">
+    <div class="kpi-card highlight"><div class="kpi-number">{{ kpi.total }}</div><div class="kpi-title">Toutes les CMD</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.abandoned }}</div><div class="kpi-title">Panier abandonné</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.pending }}</div><div class="kpi-title">En attente</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.confirmed }}</div><div class="kpi-title">Confirmées</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.ready }}</div><div class="kpi-title">Prêt à expédier</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.return_not_received }}</div><div class="kpi-title">Retour non reçues</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.shipped }}</div><div class="kpi-title">Expédiées</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.delivered }}</div><div class="kpi-title">Livrées</div></div>
+    <div class="kpi-card"><div class="kpi-number">{{ kpi.cancelled }}</div><div class="kpi-title">Annulées</div></div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar mb-3">
+    <div class="d-flex align-items-center mb-2"><i class="bi bi-funnel-fill me-2"></i><strong>Filtre</strong></div>
+    <div class="row g-2">
+        <div class="col-lg col-md-6"><input type="text" class="form-control form-control-sm" placeholder="Rechercher par mot..."></div>
+        <div class="col-lg col-md-6"><select class="form-select form-select-sm"><option selected>Etape</option></select></div>
+        <div class="col-lg col-md-6"><select class="form-select form-select-sm"><option selected>Livreur</option></select></div>
+        <div class="col-lg col-md-6"><select class="form-select form-select-sm"><option selected>Gouvernorat</option></select></div>
+        <div class="col-lg col-md-6"><input type="date" class="form-control form-control-sm"></div>
+    </div>
+</div>
+
+<!-- Main Table Container -->
+<div class="table-container">
+    <!-- Actions Bar -->
+    <div class="actions-bar d-flex align-items-center mb-3">
+        <div class="flex-grow-1">
+            <i class="bi bi-lightning-charge-fill me-2"></i><strong>Actions</strong>
+            <select class="form-select form-select-sm d-inline-block w-auto ms-2"><option>Changer le statut</option></select>
+            <button class="btn btn-sm btn-outline-secondary ms-2"><i class="bi bi-printer"></i> Imprimer</button>
+            <button class="btn btn-sm btn-outline-secondary ms-1"><i class="bi bi-box-arrow-up"></i> Exporter</button>
+        </div>
+        <div><a href="#" class="text-dark text-decoration-none"><i class="bi bi-three-dots"></i> Organiser le tableau</a></div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" class="form-check-input"></th>
+                    <th>Client</th><th>Reference</th><th>Etat</th><th>Gouvernorat</th><th>Total</th><th>Transport</th><th>Articles</th><th>Créé par</th><th>Tél</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><input type="checkbox" class="form-check-input"></td>
+                    <td><a href="#">{{ order.client }}</a></td>
+                    <td><a href="#">{{ order.reference }}</a></td>
+                    <td><span class="status-badge {{ order.status_class }}">{{ order.etat }}</span></td>
+                    <td>{{ order.gouvernorat }}</td>
+                    <td>{{ order.total }}</td>
+                    <td><strong>FIRST</strong><span class="text-success">DELIVERY</span></td>
+                    <td>{{ order.articles }}</td>
+                    <td>{{ order.cree_par }}</td>
+                    <td><a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-telephone-fill"></i> {{ order.tel }}</a></td>
+                    <td><a href="#" class="btn btn-sm btn-whatsapp"><i class="bi bi-whatsapp"></i> Whatsapp</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="11" class="text-center">Aucune commande trouvée.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table Footer / Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="text-muted">Nombre de ligne(s): {{ kpi.total }}</div>
+        <div>
+            <span class="me-2">Page 1 de 451</span>
+            <select class="form-select form-select-sm d-inline-block w-auto"><option>100</option><option>50</option><option>20</option></select>
+            <div class="btn-group btn-group-sm ms-2" role="group">
+                <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-double-left"></i></button>
+                <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-left"></i></button>
+                <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-right"></i></button>
+                <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-double-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================= MODAL: AJOUTER UNE COMMANDE ======================= -->
+<div class="modal fade" id="addOrderModal" tabindex="-1" aria-labelledby="addOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-custom-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addOrderModalLabel">Ajouter ou modifier une commande</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm">
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-lg-8">
+                            <div class="border p-3 rounded mb-3">
+                                <h5><i class="fa fa-address-book me-2"></i>Informations du client</h5>
+                                <hr class="mt-2 mb-3">
+                                <div class="mb-3">
+                                    <label for="clientName" class="form-label">Nom du client</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="clientName" placeholder="Rechercher ou ajouter un client...">
+                                        <button class="btn btn-outline-secondary" type="button"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 mb-3"><label class="form-label">Gouvernorat</label><select class="form-select"><option>Tunis</option><option>Ariana</option><option>Ben Arous</option><option>Manouba</option><option>Sousse</option><option>Zaghouan</option><option>Beja</option><option>Bizerte</option><option>Le Kef</option><option>Jendouba</option><option>Gafsa</option><option>Kairouan</option><option>Kasserine</option><option>Kebeli</option><option>Mahdia</option><option>Gabes</option><option>Medenine</option><option>Monastir</option><option>Nabeul</option><option>Siliana</option><option>Sfax</option><option>Sidi Bouzid</option><option>Tataouine</option><option>Tozeur</option></select></div>
+                                    <div class="col-md-3 mb-3"><label class="form-label">Ville</label><input type="text" class="form-control"></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Adresse</label><input type="text" class="form-control"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><label class="form-label">Téléphone principal</label><input type="tel" class="form-control"></div>
+                                    <div class="col-md-6 mb-3"><label class="form-label">Téléphone secondaire</label><input type="tel" class="form-control"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="border p-3 rounded mb-4">
+                                <h5><i class="fa fa-truck me-2"></i>Expédition / Paiement</h5>
+                                <hr class="mt-2 mb-3">
+                                <div class="col-md-4 mb-3"><label class="form-label">Livrée par</label><select class="form-select"><option>firstdelivery</option><option>Aramex</option></select></div>
+                            </div>
+
+                            <div class="border p-3 rounded">
+                                <h5><i class="fa fa-commenting me-2"></i>Commentaires</h5>
+                                <hr class="mt-2 mb-3">
+                                <textarea class="form-control" rows="3" placeholder="Ecrire votre commentaire ici"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="col-lg-4">
+                            <div class="border p-3 rounded bg-light h-100">
+                                <h5><i class="fa fa-list-alt me-2"></i>Détails de la commande</h5>
+                                <hr class="mt-2 mb-3">
+                                <div class="input-group mb-3">
+                                    <select class="form-select" id="productSearch">
+                                        <option selected>Chercher un produit...</option>
+                                        <option value="1" data-price="15.000">Produit A</option>
+                                        <option value="2" data-price="25.500">Produit B</option>
+                                        <option value="3" data-price="10.000">Produit C</option>
+                                    </select>
+                                    <input type="number" class="form-control" value="1" style="max-width: 70px;" id="productQuantity">
+                                </div>
+                                <button class="btn btn-outline-primary w-100 mb-4" type="button" id="addProductBtn"><i class="fa fa-plus"></i> Ajouter le produit</button>
+
+                                <div id="orderItems">
+                                    <!-- Les produits ajoutés apparaîtront ici -->
+                                </div>
+                                <hr>
+
+                                <h5><i class="fa fa-file-invoice-dollar me-2"></i>Résumé de la commande</h5>
+                                <hr class="mt-2 mb-3">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td>Remise</td>
+                                            <td class="d-flex">
+                                                <select class="form-select form-select-sm me-2" style="width: 100px;" id="remiseType"><option value="fix">Fixe</option><option value="percent">Percent</option></select>
+                                                <input type="number" class="form-control form-control-sm" value="0" id="remiseValue">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Frais de livraison</td>
+                                            <td><input type="number" class="form-control form-control-sm" value="8" id="fraisLivraison"></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="livraisonGratuite">
+                                                    <label class="form-check-label" for="livraisonGratuite">Livraison gratuite</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="fs-5 fw-bold">
+                                            <td>Total</td>
+                                            <td class="text-end" id="totalCommande">0.000 TND</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">Quitter</button>
+                <button type="button" class="btn btn-success">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Éléments du formulaire
+    const fraisLivraisonInput = document.getElementById('fraisLivraison');
+    const livraisonGratuiteCheckbox = document.getElementById('livraisonGratuite');
+    const remiseValueInput = document.getElementById('remiseValue');
+    const remiseTypeSelect = document.getElementById('remiseType');
+    const totalCommandeElement = document.getElementById('totalCommande');
+    const addProductBtn = document.getElementById('addProductBtn');
+    const productSearchSelect = document.getElementById('productSearch');
+    const productQuantityInput = document.getElementById('productQuantity');
+    const orderItemsContainer = document.getElementById('orderItems');
+
+    let orderItems = [];
+
+    // Fonction pour recalculer le total
+    function recalculerTotal() {
+        let sousTotalProduits = orderItems.reduce((sum, item) => sum + item.total, 0);
+        let remiseValue = parseFloat(remiseValueInput.value) || 0;
+        let fraisLivraison = parseFloat(fraisLivraisonInput.value) || 0;
+        
+        if (livraisonGratuiteCheckbox.checked) {
+            fraisLivraison = 0;
+            fraisLivraisonInput.disabled = true;
+        } else {
+            fraisLivraisonInput.disabled = false;
+        }
+
+        let totalRemise = 0;
+        if (remiseTypeSelect.value === 'percent') {
+            totalRemise = (sousTotalProduits * remiseValue) / 100;
+        } else {
+            totalRemise = remiseValue;
+        }
+
+        let totalFinal = (sousTotalProduits - totalRemise) + fraisLivraison;
+        totalFinal = Math.max(0, totalFinal); // S'assurer que le total n'est pas négatif
+        
+        totalCommandeElement.textContent = totalFinal.toFixed(3).replace('.', ',') + ' TND';
+    }
+
+    // Fonction pour afficher les produits dans le résumé
+    function renderOrderItems() {
+        orderItemsContainer.innerHTML = '';
+        if (orderItems.length > 0) {
+            const table = document.createElement('table');
+            table.className = 'table table-sm';
+            let tableBody = '<tbody>';
+            orderItems.forEach((item, index) => {
+                tableBody += `
+                    <tr>
+                        <td>${item.name} (x${item.quantity})</td>
+                        <td class="text-end">${item.total.toFixed(3).replace('.',',')}</td>
+                        <td><button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 remove-item-btn" data-index="${index}">&times;</button></td>
+                    </tr>
+                `;
+            });
+            tableBody += '</tbody>';
+            table.innerHTML = tableBody;
+            orderItemsContainer.appendChild(table);
+        }
+        recalculerTotal();
+    }
+    
+    // Écouteur pour le bouton "Ajouter le produit"
+    addProductBtn.addEventListener('click', function() {
+        const selectedOption = productSearchSelect.options[productSearchSelect.selectedIndex];
+        if (selectedOption.value) {
+            const price = parseFloat(selectedOption.getAttribute('data-price'));
+            const quantity = parseInt(productQuantityInput.value) || 1;
+            orderItems.push({
+                id: selectedOption.value,
+                name: selectedOption.text,
+                quantity: quantity,
+                price: price,
+                total: price * quantity
+            });
+            renderOrderItems();
+        }
+    });
+
+    // Écouteur pour supprimer un produit (délégation d'événement)
+    orderItemsContainer.addEventListener('click', function(e) {
+        if (e.target && e.target.matches('button.remove-item-btn')) {
+            const indexToRemove = parseInt(e.target.getAttribute('data-index'));
+            orderItems.splice(indexToRemove, 1);
+            renderOrderItems();
+        }
+    });
+
+    // Écouteurs pour les changements dans le formulaire de résumé
+    [fraisLivraisonInput, remiseValueInput, remiseTypeSelect, livraisonGratuiteCheckbox].forEach(el => {
+        el.addEventListener('input', recalculerTotal);
+        el.addEventListener('change', recalculerTotal);
+    });
+
+    // Calcul initial
+    recalculerTotal();
+});
+</script>
+{% endblock %}

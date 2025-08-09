@@ -1,0 +1,143 @@
+{% extends 'layout.html' %}
+{% block title %}Gestion de Commandes{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0"><i class="bi bi-pc-display-horizontal me-2"></i><strong>Gestion de Commandes</strong> <i class="bi bi-info-circle"></i></h4>
+        <a href="#" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Ajouter une commande</a>
+    </div>
+
+    <!-- KPI Stats Cards -->
+    <div class="d-flex flex-nowrap overflow-auto pb-2 mb-3">
+        <div class="kpi-card highlight text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Toutes les CMD</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Panier abandonné</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">En attente</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Confirmées</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Prêt à expédier</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Retour non reçues</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Expédiées</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Livrées</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Annulées</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Retour Recues</div>
+        </div>
+        <div class="kpi-card text-center">
+            <div class="kpi-number"></div><div class="kpi-title">Payées</div>
+        </div>
+        <!-- Add other cards as needed -->
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar mb-3">
+        <div class="d-flex align-items-center mb-2"><i class="bi bi-funnel-fill me-2"></i> <strong>Filtre</strong></div>
+        <div class="row g-2">
+            <div class="col-md-3"><input type="text" class="form-control" placeholder="Rechercher par moi"></div>
+            <div class="col-md-2"><select class="form-select"><option selected>Etape</option></select></div>
+            <div class="col-md-2"><select class="form-select"><option selected>Livreur</option></select></div>
+            <div class="col-md-2"><select class="form-select"><option selected>Gouvernorat</option></select></div>
+            <div class="col-md-3"><input type="date" class="form-control"></div>
+        </div>
+    </div>
+
+    <!-- Main Table Container -->
+    <div class="table-container">
+        <!-- Actions Bar -->
+        <div class="actions-bar d-flex align-items-center mb-3 p-2">
+            <div class="flex-grow-1">
+                <i class="bi bi-lightning-charge-fill me-2"></i><strong>Actions</strong>
+                <select class="form-select form-select-sm d-inline-block w-auto ms-2"><option>Changer le statut</option></select>
+                <button class="btn btn-sm btn-outline-secondary ms-2"><i class="bi bi-printer"></i> Imprimer</button>
+                <button class="btn btn-sm btn-outline-secondary ms-1"><i class="bi bi-box-arrow-up"></i> Exporter</button>
+            </div>
+            <div>
+                <a href="#" class="text-dark text-decoration-none"><i class="bi bi-three-dots"></i> Organiser le tableau</a>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" class="form-check-input"></th>
+                        <th>Client</th>
+                        <th>Reference</th>
+                        <th>Etat</th>
+                        <th>Gouvernorat</th>
+                        <th>Total</th>
+                        <th>Transport</th>
+                        <th>Articles</th>
+                        <th>Créé par</th>
+                        <th>Tél</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><input type="checkbox" class="form-check-input"></td>
+                        <td><u>{{ order.client }}</u></td>
+                        <td><u>{{ order.reference }}</u></td>
+                        <td><span class="status-badge {{ order.status_class }}">{{ order.etat }}</span></td>
+                        <td>{{ order.gouvernorat }}</td>
+                        <td>{{ order.total }}</td>
+                        <td><strong>FIRST</strong><span class="text-success">DELIVERY</span></td>
+                        <td>{{ order.articles }}</td>
+                        <td>{{ order.cree_par }}</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-telephone-fill"></i> {{ order.tel }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-whatsapp">
+                                <i class="bi bi-whatsapp"></i> Whatsapp
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Table Footer / Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted">Nombre de ligne(s): 45092</div>
+            <div>
+                <span class="me-2">Page 1 de 451</span>
+                <select class="form-select form-select-sm d-inline-block w-auto">
+                    <option>100</option>
+                    <option>50</option>
+                    <option>20</option>
+                </select>
+                <div class="btn-group btn-group-sm ms-2" role="group">
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-double-left"></i></button>
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-left"></i></button>
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-right"></i></button>
+                    <button type="button" class="btn btn-outline-secondary"><i class="bi bi-chevron-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
